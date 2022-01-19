@@ -35,12 +35,12 @@ var AppProcess = (function(){
             }
             if(isAudioMute){
                 audio.enabled = true;
-                $(this).html("<span class='material-icons'>mic</span>");
+                $(this).html("<span class='material-icons' style='width:100%;'>mic</span>");
                 updateMediaSenders(audio,rtp_aud_senders);
             }
             else{
                 audio.enabled = false;
-                $(this).html("<span class='material-icons'>mic_off</span>");
+                $(this).html("<span class='material-icons' style='width:100%;'>mic_off</span>");
                 removeMediaSenders(rtp_aud_senders);
             }
             isAudioMute = !isAudioMute;
@@ -62,6 +62,19 @@ var AppProcess = (function(){
             }
         });
 
+    }
+    async function loadAudio(){
+        try{
+            var astream = await navigator.mediaDevices.getUserMedia({
+                video: false,
+                audio: true
+            });
+            audio = astream.getAudioTracks()[0];
+            audio.enabled = false;
+        }
+        catch(e){
+            console.log(e);
+        }
     }
     function connection_status(connection){
         if(connection && (connection.connectionState == "new" || connection.connectionState == "connecting" || connection.connectionState == "connected")){
@@ -88,7 +101,35 @@ var AppProcess = (function(){
             }
         }
     }
+    function removeMediaSenders(rtp_senders){
+        for(var con_id in peers_connection_ids){
+            if(rtp_senders[con_id] && connection_status(peers_connection[con_id])){
+                //check if error occurs
+                peers_connection[con_id].removeTrack(rtp_senders[con_id]);
+                rtp_senders[con_id] = null;
+            }
+        }
+    }
+    function removeVideoStream(rtp_vid_senders){
+        if(videoCamTrack){
+            videoCamTrack.stop();
+            videoCamTrack = null;
+            local_div.srcObject = null;
+            removeMediaSenders(rtp_vid_senders);
+        }
+    }
     async function videoProcess(newVideoState){
+        if(newVideoState == video_states.None){
+            $("#videoCamOnOff").html("<span class='material-icons' style='width:100%;'>videocam_off</span>");
+            $("#btnScreenShareOnOff").html("<span class='material-icons'>present_to_all</span><div>Present now</div>")
+            video_st = newVideoState;
+            removeVideoStream(rtp_vid_senders);
+            return;
+        }
+        if(newVideoState == video_states.Camera){
+            $("#videoCamOnOff").html("<span class='material-icons' style='width:100%;'>videocam_on</span>");
+            video_st = newVideoState;
+        }
         try{
             var vstream = null;
             if(newVideoState == video_states.Camera){
@@ -99,6 +140,10 @@ var AppProcess = (function(){
                     },
                     audio:false,
                 });
+                vstream.oninactive = (e)=>{
+                    removeVideoStream(rtp_vid_senders);
+                    $("#btnScreenShareOnOff").html("<span class='material-icons'>present_to_all</span><div>Present now</div>")
+                }
             }
             else if(newVideoState == video_states.ScreenShare){
                 vstream = await navigator.mediaDevices.getDisplayMedia({
@@ -122,6 +167,15 @@ var AppProcess = (function(){
             return;
         }
         video_st = newVideoState;
+        if(newVideoState == video_states.ScreenShare){
+            $("#btnScreenShareOnOff").html("<span class='material-icons text-success'>present_to_all</span><div class='text-success'>Stop Presenting</div>");
+            $("#videoCamOnOff").html("<span class='material-icons' style='width:100%;'>videocam_off</span>");
+        }
+        else if(newVideoState == video_states.Camera){
+            $("#videoCamOnOff").html("<span class='material-icons' style='width:100%;'>videocam</span>");
+            $("#btnScreenShareOnOff").html("<span class='material-icons'>present_to_all</span><div>Present now</div>")
+        }
+        
     }
 
     var iceConfiguration = {
