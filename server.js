@@ -9,11 +9,12 @@ const io = require("socket.io")(server,{
 });
 app.use(express.static(path.join(__dirname,"")));
 var userConnections = [];
+var otherUsers = [];
 io.on("connection", (socket)=>{
     console.log("Socket id is", socket.id);
     socket.on("userconnect", (data)=>{
         console.log("userconnect",data.displayName,data.meetingid);
-        var otherUsers = userConnections.filter((p)=> p.meetingid == data.meetingid);
+        otherUsers = userConnections.filter((p)=> p.meeting_id == data.meetingid);
         userConnections.push({
             connectionID: socket.id,
             user_id: data.displayName,
@@ -25,6 +26,8 @@ io.on("connection", (socket)=>{
                 connId: socket.id
             })
         })
+        socket.emit("inform_me_about_other_user",otherUsers);
+
     });
     socket.on("SDPProcess",(data)=>{
         socket.to(data.to_connid).emit("SDPProcess",{

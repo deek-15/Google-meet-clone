@@ -85,6 +85,7 @@ textarea:focus, input:focus{
 .g-top-left{
     position: absolute;
     right: 0;
+    top: 0;
     height: 8vh;
     border-bottom-left-radius: 10px;
 }
@@ -120,4 +121,15 @@ textarea:focus, input:focus{
 .end-call-wrap{
     -ms-transform: rotate(135deg);
     transform:rotate(135deg);
+}
+.top-remote-video-show-wrap{
+    /* display: flex; */
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    /* background-image: url(../images/bg.png) !important; */
+}
+video{
+    border: 1px solid gray;
+    width: 300px;
 }
