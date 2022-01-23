@@ -276,13 +276,13 @@ var AppProcess = (function(){
             peers_connection[connId] = null;
         }
         if(remote_aud_stream[connId]){
-            remote_aud_stream[connId].getTrack().forEach((t)=>{
+            remote_aud_stream[connId].getTracks().forEach((t)=>{
                 if(t.stop) t.stop();
             })
             remote_aud_stream[connId] = null;
         }
         if(remote_vid_stream[connId]){
-            remote_vid_stream[connId].getTrack().forEach((t)=>{
+            remote_vid_stream[connId].getTracks().forEach((t)=>{
                 if(t.stop) t.stop();
             })
             remote_vid_stream[connId] = null;
