@@ -20,11 +20,15 @@ io.on("connection", (socket)=>{
             user_id: data.displayName,
             meeting_id: data.meetingid,
         });
+        var userCount = userConnections.length;
+        console.log(userCount);
+        console.log(otherUsers.length);
         otherUsers.forEach((v)=> {
             socket.to(v.connectionID).emit("inform_others_about_me",{
                 other_user_id: data.displayName,
-                connId: socket.id
-            })
+                connId: socket.id,
+                userNumber: userCount
+            });
         })
         socket.emit("inform_me_about_other_user",otherUsers);
 
@@ -35,6 +39,21 @@ io.on("connection", (socket)=>{
             from_connid: socket.id
         })
     })
+    socket.on("sendMessage", (msg)=>{
+        console.log(msg);
+        var mUser = userConnections.find((p)=>p.connectionID == socket.id);
+        if(mUser){
+            var meetingid = mUser.meeting_id;
+            var from = mUser.user_id;
+            var list = userConnections.filter((p)=>p.meeting_id == meetingid);
+            list.forEach((v)=>{
+                socket.to(v.connectionID).emit("showChatMessage", {
+                    from: from,
+                    message: msg
+                })
+            })
+        }
+    })
     socket.on("disconnect",function(){
         console.log("User disconnected");
         var disUser = userConnections.find((p)=> p.connectionID == socket.id);
@@ -43,8 +62,10 @@ io.on("connection", (socket)=>{
             userConnections = userConnections.filter((p)=> p.connectionID != socket.id);
             var list = userConnections.filter((p)=> p.meeting_id == meetingid);
             list.forEach((v)=>{
+                var userNumAfterUserLeave = userConnections.length;
                 socket.to(v.connectionID).emit("inform_other_about_disconnected_user",{
-                    connId: socket.id
+                    connId: socket.id,
+                    uNum: userNumAfterUserLeave
                 });
             });
         }
