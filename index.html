@@ -125,7 +125,7 @@
                     <div class="top-left-participant-icon">
                         <span class="material-icons">people</span>
                     </div>
-                    <div class="top-left-participant-count participant-count"></div>
+                    <div class="top-left-participant-count participant-count">1</div>
                 </div>
                 <div class="top-left-chat-wrap pt-2 cursor-pointer">
                     <span class="material-icons">message</span>
@@ -136,6 +136,44 @@
         <div class="g-bottom bg-light m-0 d-flex justify-content-between
         align-items-center">
             <div class="bottom-left d-flex" style="height:10vh">
+                <div class="g-details border border-success mb-2" style="display: none;">
+                    <div class="g-details-heading d-flex justify-content-between align-items-center border-bottom pb-1">
+                        <div class="g-details-heading-detail d-flex align-items-center cursor-pointer active">
+                            <span class="material-icons">error</span 
+                            style="margin-top:-5px">Details<span></span>
+                        </div>
+                        <div class="g-details-heading-attachment d-flex align-items-center cursor-pointer">
+                            <span class="material-icons">attachment</span
+                            style="margin-top:-5px">Attachment<span></span>
+                        </div>
+                    </div>
+                    <div class="g-details-heading-show-wrap">
+                        <div class="g-details-heading-show">
+                            <div style="font-weight: 600;color: gray;">Joining Info</div>
+                            <div class="meeting_url" style="padding: 5px 0;" data-toggle="tooltip" data-placement="top"></div>
+                            <div style="cursor: pointer;">
+                                <span class="material-icons" style="font-size: 14px;">content_copy</span>
+                                <span class="copy_info font-weight-bold">Copy Joining Info
+                                    <span style="display: none;background-color: aquamarine;border-radius: 5px;" class="link-conf font-weight-bold p-1">Link copied</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="g-details-heading-show-attachment" style="display: none;position: relative;">
+                            <div class="show-attach-file"></div>
+                            <div class="upload-attach-file">
+                                <form action="#" class="display-center pt-1" id="uploadForm" enctype="multipart/form-data" ref="uploadForm" style="justify-content: space-between;">
+                                    <div class="custom-file" style="flex-basis: 79%;">
+                                        <input type="file" class="custom-file-input" id="custom-file" name="imagefile">
+                                        <label for="custom-file" class="custom-file-label">Choose file</label>
+                                    </div>
+                                    <div class="share-button-wrap">
+                                        <button class="btn btn-primary btn-sm share-attach" style="flex-basis: 19%;padding: 6px 20px;">Share</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
                 <div class="display-center cursor-pointer meeting-details-button">
                     Meeting Details<span class="material-icons">keyboard_arrow_down</span>
                 </div>
