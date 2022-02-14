@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const fileUpload = require("express-fileupload");
 var app = express();
-var server = app.listen(3000,()=>{
+var server = app.listen(process.env.PORT || 3000,()=>{
     console.log("Listening on port 3000");
 });
 const io = require("socket.io")(server,{
