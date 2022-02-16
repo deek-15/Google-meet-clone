@@ -73,6 +73,23 @@ io.on("connection", (socket)=>{
             })
         }
     });
+    socket.on("Video_off", (data)=>{
+        console.log(data+"Video off entered");
+        // socket.emit("Switch_off_video", {
+        //     id: data.id
+        // });
+        var mUser = userConnections.find((p)=>p.connectionID == socket.id);
+        if(mUser){
+            var meetingid = mUser.meeting_id;
+            var from = mUser.user_id;
+            var list = userConnections.filter((p)=>p.meeting_id == meetingid);
+            list.forEach((v)=>{
+                socket.to(v.connectionID).emit("Switch_off_video", {
+                    id: data.id
+                });
+            })
+        }
+    });
     socket.on("disconnect",function(){
         console.log("User disconnected");
         var disUser = userConnections.find((p)=> p.connectionID == socket.id);

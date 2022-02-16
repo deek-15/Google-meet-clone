@@ -1,13 +1,14 @@
 //const { use } = require("express/lib/application");
 
 //const cli = require("nodemon/lib/cli");
-
+var socket;
 var AppProcess = (function () {
     var peers_connection_ids = [];
     var peers_connection = [];
     var remote_vid_stream = [];
     var remote_aud_stream = [];
     var local_div;
+    var local_div2;
     var serverProcess;
     var audio;
     var isAudioMute = true;
@@ -20,11 +21,14 @@ var AppProcess = (function () {
     };
     var video_st = video_states.None;
     var videoCamTrack;
+    var myConnId;
     async function _init(SDP_function, my_connid) {
         serverProcess = SDP_function;
         my_connection_id = my_connid;
+        myConnId = my_connid;
         eventProcess();
         local_div = document.getElementById("localVideoPlayer");
+        //local_div2 = document.getElementById("v_" + my_connid);
     }
     function eventProcess() {
         $("#micMuteUnmute").on("click", async function () {
@@ -117,6 +121,16 @@ var AppProcess = (function () {
             videoCamTrack.stop();
             videoCamTrack = null;
             local_div.srcObject = null;
+            console.log(myConnId);
+            //local_div2 = document.getElementById("v_" + myConnId);
+            socket.emit("Video_off",{
+                id: myConnId
+            });
+            // if(local_div2){
+            //     console.log("video stuck");
+            //    local_div2.srcObject = null;
+            //     console.log("video removed");
+            // }
             removeMediaSenders(rtp_vid_senders);
         }
     }
@@ -306,7 +320,7 @@ var AppProcess = (function () {
     };
 })();
 var MyApp = (function () {
-    var socket = null;
+    socket = null;
     var user_id = "";
     var meeting_id = "";
     function init(uid, mid) {
@@ -376,6 +390,12 @@ var MyApp = (function () {
             }
 
         });
+        socket.on("Switch_off_video", (data)=>{
+            console.log(data.id+"Arrived");
+            var local_div2 = document.getElementById("v_" + data.id);
+            //if(local_div2)
+                local_div2.srcObject = null;
+        })
         socket.on("SDPProcess", async function (data) {
             await AppProcess.processClientFunc(data.message, data.from_connid);
         });
